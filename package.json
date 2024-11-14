@@ -4,12 +4,16 @@
   "description": "Sunucu Tabanlı Programlama 2025 güz dönemi dersi",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.1"
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mysql": "^2.18.1",
+    "nodemon": "^3.1.7"
   }
 }
