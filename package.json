@@ -1,0 +1,12 @@
+{
+  "name": "sunucu2025-1",
+  "version": "1.0.0",
+  "description": "Sunucu Tabanlı Programlama 2025 güz dönemi dersi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
