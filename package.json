@@ -2,11 +2,14 @@
   "name": "sunucu2025-1",
   "version": "1.0.0",
   "description": "Sunucu Tabanlı Programlama 2025 güz dönemi dersi",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
 }
