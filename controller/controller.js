@@ -1,12 +1,9 @@
-const dbconn=require("../db/mysql_connect")
+const dbConn=require("../db/mysql_connect")
+const bcrypt=require("bcrypt")
 
-const kullanici_kontrol=async(req,res)=>{
-    console.log(req.body)
-    return res.json(req.body)
-}
-const kullanici_ekle=async(req,res)=>{
+const kullanici_ekle=async (req,res)=>{
     const kullanici_adi=req.body.kullanici_adi
-    const sifre=req.body.sifre
+    const sifre=await  bcrypt.hash(req.body.sifre,10)
     const eposta=req.body.eposta
     const adi=req.body.adi
     const soyadi=req.body.soyadi
@@ -14,26 +11,41 @@ const kullanici_ekle=async(req,res)=>{
     const cinsiyet=req.body.cinsiyet
     const dogum_tarihi=req.body.dogum_tarihi
     const yas=req.body.yas
-
-    dbconn.query("SELECT * FROM kullanicilar WHERE eposta=? AND sifre=?",[eposta,sifre],
-        (error,results)=>{
-            if(results.length>0){
-                return res.status(201).json({
+    dbConn.query("SELECT * FROM kullanicilar WHERE eposta=?",eposta,(error,results)=>{
+        if(results>0){
+            return res.json({
+                success:false,
+                data:null,
+                message:"Böyle bir kayıt var"
+            })
+        }else{
+            dbConn.query("INSERT INTO kullanicilar (kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas) VALUES (?,?,?,?,?,?,?,?,?)",[kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas],(error,results)=>{
+                return res.json({
                     success:true,
-                    data:res.body,
-                    message:"Kayıt Mevcut"
-                });
-                next()
-            }else{
-                dbconn.query(`INSERT INTO kullanicilar (kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas) VALUES ("${kullanici_adi}","${sifre}","${eposta}","${adi}","${soyadi}","${tel_no}","${cinsiyet}","${dogum_tarihi}","${yas}")`,(error,results)=>{
-                    return res.status(201).json({
-                        success:true,
-                        data:res.body,
-                        message:"Kayıt Başarılı Bir şekilde Yapıldı"
-                    });                    
+                    data:null,
+                    message:"Kayıt Başarıyla Oluşturuldu"
                 })
-            }
+            })
         }
-    )
+    })
 }
-module.exports={kullanici_kontrol,kullanici_ekle}
+const login=async(req,res)=>{
+    const kullanici_adi=req.body.kullanici_adi
+    const sifre=req.body.sifre
+    dbConn.query("SELECT * FROM kullanicilar WHERE kullanici_adi=? AND sifre=?",[kullanici_adi,sifre],(error,results)=>{
+        if(results>0){
+            return res.json({
+                success:true,
+                message:"Giriş Başarılı bir şekilde gerçekleşti"
+            })
+        }else{
+            return res.json({
+                success:false,
+                message:"Giriş Başarısız"
+            })
+        }
+        
+    })
+}
+
+module.exports={kullanici_ekle}
