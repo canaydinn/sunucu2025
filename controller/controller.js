@@ -1,6 +1,7 @@
 const dbConn=require("../db/mysql_connect")
 const bcrypt=require("bcrypt")
-
+const APIError=require("../middleware/errorHandler")
+const Response=require("../utils/response")
 const kullanici_ekle=async (req,res)=>{
     const kullanici_adi=req.body.kullanici_adi
     const sifre=await  bcrypt.hash(req.body.sifre,10)
@@ -12,12 +13,11 @@ const kullanici_ekle=async (req,res)=>{
     const dogum_tarihi=req.body.dogum_tarihi
     const yas=req.body.yas
     dbConn.query("SELECT * FROM kullanicilar WHERE eposta=?",eposta,(error,results)=>{
+    if(error){
+        throw new APIError("Bir hata ile karşılaştık",401)
+    }else{
         if(results>0){
-            return res.json({
-                success:false,
-                data:null,
-                message:"Böyle bir kayıt var"
-            })
+            return new Response(data,"Kayıt Başarılı").created(res)
         }else{
             dbConn.query("INSERT INTO kullanicilar (kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas) VALUES (?,?,?,?,?,?,?,?,?)",[kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas],(error,results)=>{
                 return res.json({
@@ -27,6 +27,8 @@ const kullanici_ekle=async (req,res)=>{
                 })
             })
         }
+    }            
+       
     })
 }
 const login=async(req,res)=>{
