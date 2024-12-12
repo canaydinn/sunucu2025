@@ -39,5 +39,16 @@ const kullanici_ekle = async (req, res) => {
             message: "Bir hata oluştu"
         });
     }
-};
-module.exports={kullanici_ekle}
+}
+const kullanici_getir=async(req,res)=>{
+    try{
+        const [result]=await dbConn.query("SELECT * FROM kullanicilar")
+        res.json(result)
+    }catch(error){
+        console.error("Database error",error)
+        res.status(500).json({
+            message:"Kullanıcılar gelmedi"
+        })
+    }
+}
+module.exports={kullanici_ekle,kullanici_getir}

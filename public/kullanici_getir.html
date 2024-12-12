@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Kullanıcı Listesi</h1>
+    <table>
+        <thead>
+            <th>ID</th>
+            <th>Kullanıcı Adı </th>
+            <th>Şifre</th>
+            <th>Eposta</th>
+            <th>Adı</th>
+            <th>Soyadı</th>
+            <th>Tel No</th>
+            <th>Cinsiyet</th>
+            <th>Doğum Tarihi</th>
+            <th>Yaş</th>
+        </thead>
+        <tbody id="kullanicilar">
+
+        </tbody>
+    </table>
+</body>
+<script>
+    async function kullanicilari_getir(){
+    try{
+        const response=await fetch("http://localhost:5000/api/kullanici_getir")
+     if(!response.ok){
+        throw new Error("Kullanıcılar Yüklenemedi")
+     }   
+     const kullanicilar=await response.json();
+     const kullanici_tablo=document.getElementById("kullanicilar");
+     kullanicilar.forEach((kullanici)=>{
+        const satir = document.createElement("tr");
+        satir.innerHTML=`
+        <td>${kullanici.ID}</td>
+        <td>${kullanici.kullanici_adi}</td>
+        <td>${kullanici.sifre}</td>
+        <td>${kullanici.eposta}</td>
+        <td>${kullanici.adi}</td>
+        <td>${kullanici.soyadi}</td>
+        <td>${kullanici.tel_no}</td>
+        <td>${kullanici.cinsiyet}</td>
+        <td>${kullanici.dogum_tarihi}</td>
+        <td>${kullanici.yas}</td>
+        `;
+        kullanici_tablo.appendChild(satir)
+     })
+        }catch(error){
+            console.log(error)
+            alert("Kullanıcılar yüklenirken bir hat oluştu")
+        }
+     
+}
+window.onload=kullanicilari_getir;
+</script>
+</html>
