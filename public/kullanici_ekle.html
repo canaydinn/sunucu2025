@@ -15,7 +15,7 @@
         <label>Eposta</label>
         <input type="text" id="eposta" name="eposta">
         <label>Adı</label>
-        <input type="text" id="ad" name="ad">
+        <input type="text" id="adi" name="adi">
         <label>Soyadı</label>
         <input type="text" id="soyadi" name="soyadi">
         <label>Tel No</label>
@@ -36,24 +36,33 @@
                 kullanici_adi:document.getElementById("kullanici_adi").value,
                 sifre:document.getElementById("sifre").value,
                 eposta:document.getElementById("eposta").value,
-                ad:document.getElementById("ad").value,
+                adi:document.getElementById("adi").value,
                 soyadi:document.getElementById("soyadi").value,
                 tel_no:document.getElementById("tel_no").value,
                 cinsiyet:document.getElementById("cinsiyet").value,
                 dogum_tarihi:document.getElementById("dogum_tarihi").value,
                 yas:document.getElementById("yas").value
             }
-        const response=await fetch("http://localhost:5000/api/register",{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify(formData)
-        })
-        const result=await response.json()
-        if(result.success){
-            alert("Kayıt Başarılı"+result.message)
-        }else{
-            alert("Kayıt Başarısız"+result.message)
-        }
+            try {
+                const response = await fetch("http://localhost:5000/api/register", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert("Kayıt Başarılı: " + result.message);
+                } else {
+                    alert("Kayıt Başarısız: " + result.message);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+            }
         })
     </script>
 </body>
