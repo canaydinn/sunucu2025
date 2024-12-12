@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Kayıt Ol</h1>
+    <form id="registerForm">
+        <label>Kullanıcı Adı</label>
+        <input type="text" id="kullanici_adi" name="kullanici_adi">
+        <label>Şifre</label>
+        <input type="text" id="sifre" name="sifre">
+        <label>Eposta</label>
+        <input type="text" id="eposta" name="eposta">
+        <label>Adı</label>
+        <input type="text" id="ad" name="ad">
+        <label>Soyadı</label>
+        <input type="text" id="soyadi" name="soyadi">
+        <label>Tel No</label>
+        <input type="text" id="tel_no" name="tel_no">
+        <label>Cinsiyet</label>
+        <input type="text" id="cinsiyet" name="cinsiyet">
+        <label>Doğum Tarihi</label>
+        <input type="text" id="dogum_tarihi" name="dogum_tarihi">
+        <label>Yaş</label>
+        <input type="text" id="yas" name="yas">
+        <button type="submit">Kayıt Ol</button>
+    </form>
+    <script>
+        const form=document.getElementById('registerForm');
+        form.addEventListener("submit",async (e)=>{
+            e.preventDefault();
+            const formData={
+                kullanici_adi:document.getElementById("kullanici_adi").value,
+                sifre:document.getElementById("sifre").value,
+                eposta:document.getElementById("eposta").value,
+                ad:document.getElementById("ad").value,
+                soyadi:document.getElementById("soyadi").value,
+                tel_no:document.getElementById("tel_no").value,
+                cinsiyet:document.getElementById("cinsiyet").value,
+                dogum_tarihi:document.getElementById("dogum_tarihi").value,
+                yas:document.getElementById("yas").value
+            }
+        const response=await fetch("http://localhost:5000/api/register",{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(formData)
+        })
+        const result=await response.json()
+        if(result.success){
+            alert("Kayıt Başarılı"+result.message)
+        }else{
+            alert("Kayıt Başarısız"+result.message)
+        }
+        })
+    </script>
+</body>
+</html>
