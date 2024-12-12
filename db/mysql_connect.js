@@ -1,16 +1,13 @@
-const mysql=require('mysql')
+const mysql=require('mysql2')
 require('dotenv/config')
-var dbConn=mysql.createConnection({
+
+var dbConn=mysql.createPool({
     user:process.env.MYSQL_USER,
     password:process.env.MYSQL_PASSWORD,
     database:process.env.MYSQL_DB_NAME,
-    host:process.env.MYSQL_INSTANCE_NAME
+    host:process.env.MYSQL_INSTANCE_NAME,
+    waitForConnections:true,
+    connectionLimit:10,
+    queueLimit:0
 })
-dbConn.connect((err)=>{
-    if(!err){
-        console.log("Veritabanına Bağlantı Yapıldı")
-    }else{
-        console.log("Veritabanı Hatası"+err)
-    }
-})
-module.exports=dbConn
+module.exports=dbConn.promise()

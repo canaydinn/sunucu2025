@@ -12,24 +12,21 @@ const kullanici_ekle=async (req,res)=>{
     const cinsiyet=req.body.cinsiyet
     const dogum_tarihi=req.body.dogum_tarihi
     const yas=req.body.yas
-    dbConn.query("SELECT * FROM kullanicilar WHERE eposta=?",eposta,(error,results)=>{
+    const [result]=await dbConn.query("SELECT * FROM kullanicilar WHERE eposta=?",eposta);
     if(error){
         throw new APIError("Bir hata ile karşılaştık",401)
     }else{
         if(results>0){
             return new Response(data,"Kayıt Başarılı").created(res)
         }else{
-            dbConn.query("INSERT INTO kullanicilar (kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas) VALUES (?,?,?,?,?,?,?,?,?)",[kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas],(error,results)=>{
+            const [result_insert]=dbConn.query("INSERT INTO kullanicilar (kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas) VALUES (?,?,?,?,?,?,?,?,?)",[kullanici_adi,sifre,eposta,adi,soyadi,tel_no,cinsiyet,dogum_tarihi,yas])
                 return res.json({
                     success:true,
                     data:null,
                     message:"Kayıt Başarıyla Oluşturuldu"
                 })
-            })
         }
     }            
-       
-    })
 }
 const login=async(req,res)=>{
     const kullanici_adi=req.body.kullanici_adi
