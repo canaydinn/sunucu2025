@@ -51,4 +51,20 @@ const kullanici_getir=async(req,res)=>{
         })
     }
 }
-module.exports={kullanici_ekle,kullanici_getir}
+
+const satis_getir=async(req,res)=>{
+try{
+const [result]=await dbConn.query("SELECT sales_date,sales_amount FROM sales_data")
+res.json({
+    success:true,
+    data:result
+})
+}catch(error){
+console.error("Database Error",error)
+res.status(500).json({
+    success:false,
+    message:"Veri Alınamadı"
+})
+}
+}
+module.exports={kullanici_ekle,kullanici_getir,satis_getir}

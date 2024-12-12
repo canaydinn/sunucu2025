@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Sales Data</h1>
+    <canvas id="salesChart" width="400" height="200"></canvas>
+</body>
+<script>
+    async function sales_data_getir(){
+        try{
+            const response=await fetch("http://localhost:5000/api/satis_getir")
+            const result=await response.json()
+            if(result.success){
+                const labels=result.data.map(item=>item.sales_date)
+                console.log(labels)
+                const amount=result.data.map(item=>item.sales_amount)
+                console.log(amount)
+                const ctx=document.getElementById("salesChart").getContext("2d")
+                new Chart(ctx,{
+                    type:"line",
+                    data:{
+                        labels:labels,
+                        datasets:[{
+                            label:"Günlük satışlar",
+                            data:amount,
+                            borderColor:"blue",
+                            fill:false,
+                            tension:0.1
+                        },
+                        ],
+                        },
+                        options:{
+                            responsive:true,
+                            scales:{
+                                x:{
+                                    title:{
+                                        display:true,
+                                        text:"Tarihler",
+                                    },
+                                },
+                                y:{
+                                    title:{
+                                        display:true,
+                                        text:"Satışlar"
+                                    },
+                                },
+                            },
+                        },
+                })
+            }else{
+                alert("Veri Alınamadı")
+            }
+        }catch(error)
+        {
+            console.error("Veri alınamadı")
+        }
+    }
+    window.onload=sales_data_getir
+</script>
+</html>
