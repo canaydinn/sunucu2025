@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    #container{
+        display: flex;
+        flex-direction: row;
+    }
+    #sidebar{
+        width:250px;
+        background-color: black;
+        color:aliceblue;
+        display: flex;
+        flex-direction: column;
+        justify-content: top;
+        align-items: center;
+    }
+    #content{
+        width:100%;
+    }
+    body img{
+width: 150px;
+height: 150px;
+    }
+    body label{
+        font-size: 24px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    #header{
+        width: 100%;
+        height: 50px;
+        background-color: brown;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color:aliceblue;
+        font-size: 36px;
+    }
+    #salesChart{
+        width:650px !important;
+        height:250px !important;
+    }
+</style>
+</head>
+
+<body>
+    <div  id="container">
+        <div id="sidebar">
+            <img src="images/logo.jpg">
+            <label>Satışlar</label>
+            <label>Siparişler</label>
+        </div>
+        <div id="content">
+            <div id="header">Gösterge Paneli</div>
+            <div class="filter_container">
+                <h3>Siparişleri Tarihe Göre Filtrele</h3>
+                <input type="date" id="startDate">
+                <input type="date" id="endDate">
+                <button onclick="filtrele()">Filtrele</button>
+            </div>
+            <table id="siparisler_tablosu" class="display" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Müşteri Adı</th>
+                        <th>Sipariş tarihi</th>
+                        <th>Toplam Tutar</th>
+                    </tr>
+                </thead>
+                <tbody>
+            
+                </tbody>
+                </table>
+                <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+    
+    <script>
+        async function siparis_getir(){
+            try{
+                const response=await fetch("http://localhost:5000/api/siparis_getir")
+                const result=await response.json()
+                if(result.success){
+                    const tableBody=document.querySelector("#siparisler_tablosu tbody")
+                    result.data.forEach(siparis=>{
+                        const row=`
+                        <tr>
+                            <td>${siparis.id}</td>
+                            <td>${siparis.musteri_adi}</td>
+                            <td>${siparis.siparis_tarihi}</td>
+                            <td>${siparis.toplam_miktar}</td>
+                        </tr>
+                        `;
+                        tableBody.innerHTML+=row;
+                    });
+                    $("#siparisler_tablosu").DataTable();
+                }
+            }catch(error){
+                console.error("bir hata oluştu",error)
+            }
+        }
+        async function sales_data_getir(){
+        try{
+            const response=await fetch("http://localhost:5000/api/satis_getir")
+            const result=await response.json()
+            if(result.success){
+                const labels=result.data.map(item=>item.sales_date)
+                console.log(labels)
+                const amount=result.data.map(item=>item.sales_amount)
+                console.log(amount)
+                const ctx=document.getElementById("salesChart").getContext("2d")
+                new Chart(ctx,{
+                    type:"line",
+                    data:{
+                        labels:labels,
+                        datasets:[{
+                            label:"Günlük satışlar",
+                            data:amount,
+                            borderColor:"blue",
+                            fill:false,
+                            tension:0.1
+                        },
+                        ],
+                        },
+                        options:{
+                            responsive:true,
+                            scales:{
+                                x:{
+                                    title:{
+                                        display:true,
+                                        text:"Tarihler",
+                                    },
+                                },
+                                y:{
+                                    title:{
+                                        display:true,
+                                        text:"Satışlar"
+                                    },
+                                },
+                            },
+                        },
+                })
+            }else{
+                alert("Veri Alınamadı")
+            }
+        }catch(error)
+        {
+            console.error("Veri alınamadı")
+        }
+    }
+    async function filtrele(){
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    
+    if(!startDate || !endDate){
+        alert("Lütfen başlangıç ve bitiş tarihleri giriniz");
+        return;
+    }
+
+    const url = `http://localhost:5000/api/siparis_tarih?startDate=${startDate}&endDate=${endDate}`;
+    try {
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (result.success) {
+            // Destroy the previous DataTable instance (if exists)
+            if ($.fn.DataTable.isDataTable("#siparisler_tablosu")) {
+                $("#siparisler_tablosu").DataTable().destroy();
+            }
+
+            // Clear the existing rows in the table body
+            const tableBody = document.querySelector("#siparisler_tablosu tbody");
+            tableBody.innerHTML = "";
+
+            // Append new rows with the filtered data
+            result.data.forEach(siparis => {
+                const row = `
+                    <tr>
+                        <td>${siparis.id}</td>
+                        <td>${siparis.musteri_adi}</td>
+                        <td>${siparis.siparis_tarihi}</td>
+                        <td>${siparis.toplam_miktar}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+
+            // Reinitialize the DataTable after populating the data
+            $("#siparisler_tablosu").DataTable();
+        } else {
+            alert("Veri Alınamadı");
+        }
+    } catch (error) {
+        console.error("Bir hata oluştu", error);
+    }
+}
+
+    window.onload=()=>{siparis_getir();sales_data_getir()}
+    </script>
+</body>
+</html>

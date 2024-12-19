@@ -67,4 +67,40 @@ res.status(500).json({
 })
 }
 }
-module.exports={kullanici_ekle,kullanici_getir,satis_getir}
+const siparis_getir=async(req,res)=>{
+    try{
+        const [results]=await dbConn.query("SELECT * from siparisler");
+        return res.status(200).json({
+            success:true,
+            data:results
+        })
+    }catch(error){
+        console.error("veritabanı hatası",error)
+        return res.status(500).json({
+            success:false,
+            message:"Siparişler Alınamadı"
+        })
+    }
+}
+const siparis_getir_by_tarih=async(req,res)=>{
+const {startDate,endDate}=req.query
+if(!startDate||!endDate){
+    return res.status(400).json({
+        success:false,
+        message:"Başlangıç ve Bitiş tarihleri eksik"
+    })
+}
+try{
+    const [results]=await dbConn.query("SELECT * FROM siparisler Where siparis_tarihi BETWEEN ? AND ?",[startDate,endDate])
+    return res.status(200).json({
+        success:true,
+        data:results
+    })
+}catch(error){
+    return res.status(500).json({
+        success:false,
+        message:"Veriler Alınamadı"
+    })
+}
+}
+module.exports={kullanici_ekle,kullanici_getir,satis_getir,siparis_getir,siparis_getir_by_tarih}
